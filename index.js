@@ -1,31 +1,33 @@
 const url = require('url');
+const fs = require('fs');
+const path = require('path');
 const ProgressBar = require('progress');
 const logSymbols = require('log-symbols');
 const axios = require('axios');
 const request = require('request');
-const fs = require('fs');
-const path = require('path');
-let BaseUrl = process.argv[2];
+const chalk = require('chalk');
+const {
+    setKey
+} = require('./key');
 const exportBaseUrl = path.join(process.cwd(), '');
 let bar = '';
+let token = '';
 /**
  * @param {String} BaseUrl
  */
 function parseUrl(BaseUrl) {
-    const pathObj = url.parse(BaseUrl);
-    const ghUrl = pathObj.path;
-    let username = '';
-    let repos = '';
-    let branch = '';
-    let download = '';
     try {
+        const pathObj = url.parse(BaseUrl);
+        const ghUrl = pathObj.path;
         const infoList = ghUrl.split('/');
-        username = infoList[1];
-        repos = infoList[2];
+        let username = infoList[1];
+        let repos = infoList[2];
+        let branch = '';
+        let download = '';
         const includeList = ['/tree/', '/blob/'];
         let includeSwitch = false;
         includeList.map(item => {
-            if(ghUrl.indexOf(item) > -1 && !includeSwitch) {
+            if (ghUrl.indexOf(item) > -1 && !includeSwitch) {
                 includeSwitch = true;
                 branch = infoList[4];
                 const list = ghUrl.split(item);
@@ -34,12 +36,12 @@ function parseUrl(BaseUrl) {
                 download = download.join('/') + '/';
             }
         })
-        if(!includeSwitch){
+        if (!includeSwitch) {
             branch = process.argv[3] || 'master';
         }
         requestUrl(username, repos, branch, download);
-    } catch(e) {
-        console.log('url error');
+    } catch (e) {
+        console.log(logSymbols.error, chalk.red('url error'));
     }
 }
 
@@ -51,7 +53,6 @@ function parseUrl(BaseUrl) {
  */
 function requestUrl(username, repos, branch, download) {
     const url = `https://api.github.com/repos/${username}/${repos}/git/trees/${branch}?recursive=1`;
-    const token = 'b8455e3d38fba927c47c8b6a3dff9038a06b209d';
     axios.get(url, {
         header: {
             Authorization: `token ${token}`
@@ -74,12 +75,14 @@ function handleTree(username, repos, branch, tree, download) {
     let filterList = tree.filter(item => {
         return item.type === 'blob';
     })
-    if(download !== '') {
+    if (download !== '') {
         filterList = filterList.filter(item => {
             return item.path.indexOf(download) > -1;
         })
     }
-    bar = new ProgressBar(':bar :current/:total', { total: filterList.length });
+    bar = new ProgressBar(':bar :current/:total', {
+        total: filterList.length
+    });
     filterList.map(item => {
         downloadFile(username, repos, branch, item.path)
     });
@@ -97,8 +100,8 @@ function downloadFile(username, repos, branch, url) {
     mkdirsSync(dir);
     request(`https://github.com/${username}/${repos}/raw/${branch}/${url}`, (err, res, body) => {
         bar.tick();
-        if(bar.complete) {
-            console.log(logSymbols.success, 'all files download!');
+        if (bar.complete) {
+            console.log(logSymbols.success, chalk.green('all files download!'));
         }
     }).pipe(fs.createWriteStream(exportUrl))
 }
@@ -109,13 +112,36 @@ function downloadFile(username, repos, branch, url) {
  */
 function mkdirsSync(dirname) {
     if (fs.existsSync(dirname)) {
-      return true;
-    } else {
-      if (mkdirsSync(path.dirname(dirname))) {
-        fs.mkdirSync(dirname);
         return true;
-      }
+    } else {
+        if (mkdirsSync(path.dirname(dirname))) {
+            fs.mkdirSync(dirname);
+            return true;
+        }
     }
-  }
+}
 
-parseUrl(BaseUrl);
+function readFile() {
+    try {
+        token = fs.readFileSync('./private.key');
+    } catch (e) {
+        console.log(logSymbols.error, chalk.red('please set key first!'))
+    }
+}
+
+function main() {
+    let BaseUrl = process.argv[2];
+    if (!BaseUrl) {
+        console.log(chalk.red('url is required!'));
+        return;
+    }
+    if (BaseUrl === 'set') {
+        const key = process.argv[3];
+        setKey(key);
+        return;
+    }
+    readFile();
+    parseUrl(BaseUrl);
+}
+
+main();
