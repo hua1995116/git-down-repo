@@ -95,7 +95,7 @@ function handleTree(username, repos, branch, tree, download) {
  * @param {String} url
  */
 function downloadFile(username, repos, branch, url) {
-    const exportUrl = path.join(exportBaseUrl, url);
+    const exportUrl = path.join(exportBaseUrl, repos, url);
     const dir = path.dirname(exportUrl);
     mkdirsSync(dir);
     request(`https://github.com/${username}/${repos}/raw/${branch}/${url}`, (err, res, body) => {
