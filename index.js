@@ -33,7 +33,7 @@ function parseUrl(BaseUrl) {
                 const list = ghUrl.split(item);
                 download = list[1].split('/');
                 download.shift();
-                download = download.join('/') + '/';
+                download = download.join('/');
             }
         })
         if (!includeSwitch) {
@@ -72,6 +72,9 @@ function requestUrl(username, repos, branch, download) {
  * @param {String} download
  */
 function handleTree(username, repos, branch, tree, download) {
+    if(findDir(tree, download) === 'tree') {
+        download = download + '/'
+    }
     let filterList = tree.filter(item => {
         return item.type === 'blob';
     })
@@ -86,6 +89,16 @@ function handleTree(username, repos, branch, tree, download) {
     filterList.map(item => {
         downloadFile(username, repos, branch, item.path)
     });
+}
+
+function findDir(list, file) {
+    let type = '';
+    list.map(item => {
+        if(item.path === file) {
+            type = item.type;
+        }
+    })
+    return type;
 }
 
 /**
