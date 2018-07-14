@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.18.0",
+    "log-symbols": "^2.2.0",
+    "progress": "^2.0.0",
     "request": "^2.87.0"
   }
 }

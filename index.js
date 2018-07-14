@@ -1,10 +1,13 @@
 const url = require('url');
-let BaseUrl  = process.argv[2];
+const ProgressBar = require('progress');
+const logSymbols = require('log-symbols');
 const axios = require('axios');
 const request = require('request');
 const fs = require('fs');
 const path = require('path');
-const exportBaseUrl = path.join(process.cwd(), 'export');
+let BaseUrl = process.argv[2];
+const exportBaseUrl = path.join(process.cwd(), '');
+let bar = '';
 /**
  * @param {String} BaseUrl
  */
@@ -28,10 +31,9 @@ function parseUrl(BaseUrl) {
                 const list = ghUrl.split(item);
                 download = list[1].split('/');
                 download.shift();
-                download = download.join('/');
+                download = download.join('/') + '/';
             }
         })
-        console.log(username, repos, branch, download)
         if(!includeSwitch){
             branch = process.argv[3] || 'master';
         }
@@ -77,6 +79,7 @@ function handleTree(username, repos, branch, tree, download) {
             return item.path.indexOf(download) > -1;
         })
     }
+    bar = new ProgressBar(':bar :current/:total', { total: filterList.length });
     filterList.map(item => {
         downloadFile(username, repos, branch, item.path)
     });
@@ -92,7 +95,12 @@ function downloadFile(username, repos, branch, url) {
     const exportUrl = path.join(exportBaseUrl, url);
     const dir = path.dirname(exportUrl);
     mkdirsSync(dir);
-    request(`https://github.com/${username}/${repos}/raw/${branch}/${url}`).pipe(fs.createWriteStream(exportUrl))
+    request(`https://github.com/${username}/${repos}/raw/${branch}/${url}`, (err, res, body) => {
+        bar.tick();
+        if(bar.complete) {
+            console.log(logSymbols.success, 'all files download!');
+        }
+    }).pipe(fs.createWriteStream(exportUrl))
 }
 
 /**
