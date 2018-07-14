@@ -4,7 +4,7 @@
   "description": "Download git-repo for any url",
   "main": "index.js",
   "scripts": {
-    "gitdown": "node index.js"
+    "gitdown": "./index.js"
   },
   "repository": {
     "type": "git",
