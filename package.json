@@ -1,17 +1,29 @@
 {
   "name": "git-down-repo",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.2.0",
+  "description": "Download git-repo for any url",
   "main": "index.js",
   "scripts": {
     "gitdown": "node index.js"
   },
-  "author": "hyf<qiufenghyf@163.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hua1995116/git-down-repo.git"
+  },
+  "keywords": [
+    "git"
+  ],
+  "author": "hyf <qiufenghyf@163.com>",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hua1995116/git-down-repo/issues"
+  },
+  "homepage": "https://github.com/hua1995116/git-down-repo#readme",
   "dependencies": {
     "axios": "^0.18.0",
     "log-symbols": "^2.2.0",
     "progress": "^2.0.0",
     "request": "^2.87.0"
-  }
+  },
+  "devDependencies": {}
 }
