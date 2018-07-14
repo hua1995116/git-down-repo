@@ -1,0 +1,15 @@
+{
+  "name": "git-down-repo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "gitdown": "node index.js"
+  },
+  "author": "hyf<qiufenghyf@163.com>",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "request": "^2.87.0"
+  }
+}
