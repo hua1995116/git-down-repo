@@ -1,10 +1,13 @@
 {
   "name": "git-down-repo",
-  "version": "1.3.0",
+  "version": "1.5.0",
   "description": "Download git-repo for any url",
   "main": "index.js",
-  "scripts": {
+  "bin": {
     "gitdown": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
