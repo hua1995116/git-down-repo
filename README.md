@@ -32,7 +32,7 @@
 ```Shell
 npm install git-down-repo -g // 安装全局
 
-gitdown set key // 刚才复制的key
+gitdown set key // 刚才复制的key(key 保存在本地目录)
 
 // test 
 gitdown https://github.com/hua1995116/webchat  // 下载整个仓库（默认master）
