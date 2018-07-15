@@ -7,12 +7,15 @@ const logSymbols = require('log-symbols');
 const axios = require('axios');
 const request = require('request');
 const chalk = require('chalk');
+const ora = require('ora');
+const spinner = ora('download start!').start();
 const {
     setKey
 } = require('./key');
 const exportBaseUrl = path.join(process.cwd(), '');
 let bar = '';
 let token = '';
+let protocol = '';
 /**
  * @param {String} BaseUrl
  */
@@ -20,6 +23,7 @@ function parseUrl(BaseUrl) {
     try {
         const pathObj = url.parse(BaseUrl);
         const ghUrl = pathObj.path;
+        protocol = pathObj.protocol;
         const infoList = ghUrl.split('/');
         let username = infoList[1];
         let repos = infoList[2];
@@ -53,7 +57,10 @@ function parseUrl(BaseUrl) {
  * @param {String} download
  */
 function requestUrl(username, repos, branch, download) {
-    const url = `https://api.github.com/repos/${username}/${repos}/git/trees/${branch}?recursive=1`;
+    // request start 
+    spinner.color = 'yellow';
+	spinner.text = 'loading...';
+    const url = `${protocol}//api.github.com/repos/${username}/${repos}/git/trees/${branch}?recursive=1`;
     axios.get(url, {
         header: {
             Authorization: `token ${token}`
@@ -62,7 +69,9 @@ function requestUrl(username, repos, branch, download) {
         const data = res.data;
         const trees = data.tree;
         handleTree(username, repos, branch, trees, download);
-    });
+    }).catch(e => {
+        console.log(chalk.red(`network is error or key is not't set!`));
+    })
 }
 
 /**
@@ -73,6 +82,7 @@ function requestUrl(username, repos, branch, download) {
  * @param {String} download
  */
 function handleTree(username, repos, branch, tree, download) {
+    // handle tree
     if(findDir(tree, download) === 'tree') {
         download = download + '/'
     }
@@ -87,6 +97,8 @@ function handleTree(username, repos, branch, tree, download) {
     bar = new ProgressBar(':bar :current/:total', {
         total: filterList.length
     });
+    // request list is ready
+    spinner.stop();
     filterList.map(item => {
         downloadFile(username, repos, branch, item.path)
     });
@@ -109,10 +121,12 @@ function findDir(list, file) {
  * @param {String} url
  */
 function downloadFile(username, repos, branch, url) {
+    // download file
     const exportUrl = path.join(exportBaseUrl, repos, url);
     const dir = path.dirname(exportUrl);
+    // mkdir
     mkdirsSync(dir);
-    request(`https://github.com/${username}/${repos}/raw/${branch}/${url}`, (err, res, body) => {
+    request(`${protocol}//github.com/${username}/${repos}/raw/${branch}/${url}`, (err, res, body) => {
         bar.tick();
         if (bar.complete) {
             console.log(logSymbols.success, chalk.green('all files download!'));
@@ -137,7 +151,9 @@ function mkdirsSync(dirname) {
 
 function readFile() {
     try {
-        token = fs.readFileSync('./private.key');
+        // decode key
+        const key = fs.readFileSync('./private.key');
+        token = (new Buffer(key.toString(), 'base64')).toString();
     } catch (e) {
         console.log(logSymbols.error, chalk.red('please set key first!'))
     }

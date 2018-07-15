@@ -6,6 +6,7 @@ function setKey(key) {
         console.log(logSymbols.error, chalk.red(`can't set key null`));
         return;
     }
+    key = (new Buffer(key)).toString('base64');
     fs.writeFile('./private.key', JSON.stringify(key), err => {
         if(err) {
             console.log(logSymbols.error, chalk.red('set key error'));

@@ -1,5 +1,8 @@
 # git-down-repo
 
+![](https://img.shields.io/npm/dm/git-down-repo.svg)
+![](https://img.shields.io/npm/v/git-down-repo.svg)
+![](https://img.shields.io/npm/l/git-down-repo.svg)
 # 配置
 
 打开 https://github.com/settings/tokens
