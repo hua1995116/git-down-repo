@@ -11,7 +11,6 @@ const ora = require('ora');
 const spinner = ora('download start!').start();
 const exportBaseUrl = path.join(process.cwd(), '');
 let bar = '';
-let token = '';
 let protocol = '';
 /**
  * @param {String} BaseUrl
@@ -133,12 +132,10 @@ function downloadFile(username, repos, branch, url) {
  */
 function mkdirsSync(dirname) {
     if (fs.existsSync(dirname)) {
-        return true;
-    } else {
-        if (mkdirsSync(path.dirname(dirname))) {
-            fs.mkdirSync(dirname);
-            return true;
-        }
+        return;
+    }
+    if (mkdirsSync(path.dirname(dirname))) {
+        fs.mkdirSync(dirname);
     }
 }
 
