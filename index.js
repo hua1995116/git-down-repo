@@ -8,10 +8,11 @@ const axios = require('axios');
 const request = require('request');
 const chalk = require('chalk');
 const ora = require('ora');
-const spinner = ora('download start!').start();
+const inquirer = require('inquirer');
 const exportBaseUrl = path.join(process.cwd(), '');
-let bar = '';
-let protocol = '';
+let spinner = null; // loading animate
+let bar = null; // loading bar
+let protocol = null;
 /**
  * @param {String} BaseUrl
  */
@@ -40,13 +41,48 @@ function parseUrl(BaseUrl) {
         if (!includeSwitch) {
             branch = process.argv[3] || 'master';
         }
-        requestUrl(username, repos, branch, download);
+        handleExistDir(username, repos, branch, download);
     } catch (e) {
         console.log(logSymbols.error, chalk.red('url error'));
     }
 }
 
 /**
+ * @desc judge if local direstory has this repos
+ * @param {String} username
+ * @param {String} repos
+ * @param {String} branch
+ * @param {String} download
+ */
+function handleExistDir(username, repos, branch, download) {
+    const currentRepos = path.join(process.cwd(), repos);
+    if(fs.existsSync(currentRepos)) {
+        inquirer
+            .prompt([
+                {
+                type: 'list',
+                name: 'type',
+                message: `Your current directory has already '${repos}'? Do you want to continue?`,
+                choices: [
+                    'continue',
+                    'cancel'
+                ]
+                }
+            ])
+            .then(answers => {
+                if(answers.type === 'continue') {
+                    requestUrl(username, repos, branch, download);
+                } else {
+                    return;
+                }
+            });
+    } else {
+        requestUrl(username, repos, branch, download);
+    }
+}
+
+/**
+ * @desc request api
  * @param {String} username
  * @param {String} repos
  * @param {String} branch
@@ -54,6 +90,7 @@ function parseUrl(BaseUrl) {
  */
 function requestUrl(username, repos, branch, download) {
     // request start 
+    spinner = ora('download start!').start();
     spinner.color = 'yellow';
 	spinner.text = 'loading...';
     const url = `${protocol}//api.github.com/repos/${username}/${repos}/git/trees/${branch}?recursive=1`;
@@ -62,11 +99,14 @@ function requestUrl(username, repos, branch, download) {
         const trees = data.tree;
         handleTree(username, repos, branch, trees, download);
     }).catch(e => {
-        console.log(chalk.red(`network is error or key is not't set!`));
+        console.log(e);
+        spinner.stop();
+        console.log(chalk.red(`network is error!`));
     })
 }
 
 /**
+ * parse response 
  * @param {String} username
  * @param {String} repos
  * @param {String} branch
@@ -74,7 +114,6 @@ function requestUrl(username, repos, branch, download) {
  * @param {String} download
  */
 function handleTree(username, repos, branch, tree, download) {
-    // handle tree
     if(findDir(tree, download) === 'tree') {
         download = download + '/'
     }
@@ -86,16 +125,22 @@ function handleTree(username, repos, branch, tree, download) {
             return item.path.indexOf(download) > -1;
         })
     }
+    // request list is ready
+    spinner.stop();
     bar = new ProgressBar(':bar :current/:total', {
         total: filterList.length
     });
-    // request list is ready
-    spinner.stop();
     filterList.map(item => {
         downloadFile(username, repos, branch, item.path)
     });
 }
 
+/**
+ * @desc file or tree
+ * @param {String} list
+ * @param {String} file
+ * @returns String
+ */
 function findDir(list, file) {
     let type = '';
     list.map(item => {
@@ -139,16 +184,11 @@ function mkdirsSync(dirname) {
         return true;
     }
 }
-
+// entry 
 function main() {
     let BaseUrl = process.argv[2];
     if (!BaseUrl) {
         console.log(chalk.red('url is required!'));
-        return;
-    }
-    if (BaseUrl === 'set') {
-        const key = process.argv[3];
-        setKey(key);
         return;
     }
     parseUrl(BaseUrl);

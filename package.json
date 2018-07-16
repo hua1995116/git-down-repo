@@ -1,6 +1,6 @@
 {
   "name": "git-down-repo",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Download git-repo for any url",
   "main": "index.js",
   "bin": {
@@ -25,6 +25,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "chalk": "^2.4.1",
+    "inquirer": "^6.0.0",
     "log-symbols": "^2.2.0",
     "ora": "^2.1.0",
     "progress": "^2.0.0",
