@@ -21,7 +21,9 @@ gitdown https://github.com/hua1995116/webchat/tree/master/config // 下载仓库
 gitdown https://github.com/hua1995116/webchat/blob/master/config/dev.env.js // 下载某个文件
 ```
 
+# 版本
 
-2018.7.16
+## 2018.7.16
 v2.3.0
+
 1.优化体验，当本地存在需下载目录时候，可以选择是否继续覆盖
