@@ -1,6 +1,6 @@
 {
   "name": "git-down-repo",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "description": "Download git-repo for any url",
   "main": "index.js",
   "bin": {

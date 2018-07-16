@@ -132,10 +132,11 @@ function downloadFile(username, repos, branch, url) {
  */
 function mkdirsSync(dirname) {
     if (fs.existsSync(dirname)) {
-        return;
+        return true;
     }
     if (mkdirsSync(path.dirname(dirname))) {
         fs.mkdirSync(dirname);
+        return true;
     }
 }
 
