@@ -9,9 +9,6 @@ const request = require('request');
 const chalk = require('chalk');
 const ora = require('ora');
 const spinner = ora('download start!').start();
-const {
-    setKey
-} = require('./key');
 const exportBaseUrl = path.join(process.cwd(), '');
 let bar = '';
 let token = '';
@@ -61,11 +58,7 @@ function requestUrl(username, repos, branch, download) {
     spinner.color = 'yellow';
 	spinner.text = 'loading...';
     const url = `${protocol}//api.github.com/repos/${username}/${repos}/git/trees/${branch}?recursive=1`;
-    axios.get(url, {
-        header: {
-            Authorization: `token ${token}`
-        }
-    }).then(res => {
+    axios.get(url).then(res => {
         const data = res.data;
         const trees = data.tree;
         handleTree(username, repos, branch, trees, download);
@@ -149,16 +142,6 @@ function mkdirsSync(dirname) {
     }
 }
 
-function readFile() {
-    try {
-        // decode key
-        const key = fs.readFileSync('./private.key');
-        token = (new Buffer(key.toString(), 'base64')).toString();
-    } catch (e) {
-        console.log(logSymbols.error, chalk.red('please set key first!'))
-    }
-}
-
 function main() {
     let BaseUrl = process.argv[2];
     if (!BaseUrl) {
@@ -170,7 +153,6 @@ function main() {
         setKey(key);
         return;
     }
-    readFile();
     parseUrl(BaseUrl);
 }
 
