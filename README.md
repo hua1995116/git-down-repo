@@ -1,8 +1,10 @@
 # git-down-repo
 
-![](https://img.shields.io/npm/dm/git-down-repo.svg)
-![](https://img.shields.io/npm/v/git-down-repo.svg)
-![](https://img.shields.io/npm/l/git-down-repo.svg)
+<p algin="center">
+    <a href="https://npmcharts.com/compare/git-down-repo?minimal=true" rel="nofollow"><img src="https://img.shields.io/npm/dm/git-down-repo.svg" style="max-width:100%;"></a>
+    <a href="https://www.npmjs.com/package/git-down-repo" rel="nofollow"><img src="https://img.shields.io/npm/v/git-down-repo.svg" style="max-width:100%;"></a>
+    <a href="https://www.npmjs.com/package/git-down-repo" rel="nofollow"><img src="https://img.shields.io/npm/l/git-down-repo.svg" style="max-width:100%;"></a>
+</p>
 
 # 开始
 
