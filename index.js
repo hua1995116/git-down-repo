@@ -13,6 +13,7 @@ const exportBaseUrl = path.join(process.cwd(), '');
 let spinner = null; // loading animate
 let bar = null; // loading bar
 let protocol = null;
+let argvs = [];
 /**
  * @param {String} BaseUrl
  */
@@ -62,7 +63,7 @@ function handleExistDir(username, repos, branch, download) {
                 {
                 type: 'list',
                 name: 'type',
-                message: `Your current directory has already '${repos}'? Do you want to continue?`,
+                message: `Your current directory already has '${repos}'? Do you want to continue?`,
                 choices: [
                     'continue',
                     'cancel'
@@ -115,7 +116,9 @@ function requestUrl(username, repos, branch, download) {
  */
 function handleTree(username, repos, branch, tree, download) {
     if(findDir(tree, download) === 'tree') {
-        download = download + '/'
+        download = download + '/';
+    } else {
+        download = '/' + download;
     }
     let filterList = tree.filter(item => {
         return item.type === 'blob';
@@ -164,9 +167,18 @@ function downloadFile(username, repos, branch, url) {
     // mkdir
     mkdirsSync(dir);
     request(`${protocol}//github.com/${username}/${repos}/raw/${branch}/${url}`, (err, res, body) => {
+        if(err) {
+            console.log(logSymbols.success, chalk.red(`${url} is error`));
+            return;
+        }
         bar.tick();
         if (bar.complete) {
-            console.log(logSymbols.success, chalk.green('all files download!'));
+            console.log(logSymbols.success, chalk.green(`${repos} all files download!`));
+            const BaseUrl = argvs.shift();
+            if (!BaseUrl) {
+                return;
+            }
+            parseUrl(BaseUrl);
         }
     }).pipe(fs.createWriteStream(exportUrl))
 }
@@ -186,7 +198,10 @@ function mkdirsSync(dirname) {
 }
 // entry 
 function main() {
-    let BaseUrl = process.argv[2];
+    const argv = process.argv;
+    argv.splice(0, 2);
+    argvs.push(...argv);
+    const BaseUrl = argvs.shift();
     if (!BaseUrl) {
         console.log(chalk.red('url is required!'));
         return;

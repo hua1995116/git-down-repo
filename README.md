@@ -19,9 +19,17 @@ gitdown https://github.com/hua1995116/webchat dev // 下载某个仓库的dev分
 gitdown https://github.com/hua1995116/webchat/tree/master/config // 下载仓库某个文件夹
 
 gitdown https://github.com/hua1995116/webchat/blob/master/config/dev.env.js // 下载某个文件
+
+gitdown https://github.com/hua1995116/webchat/blob/master/config/dev.env.js https://github.com/hua1995116/webpack-plugin-inner-script/blob/master/index.js // 下载多个项目（空格分隔）
 ```
 
 # 版本
+
+## 2018.7.18
+v2.3.1
+
+1.支持多个链接形式
+2.修复单个文件下载多余文件情况
 
 ## 2018.7.16
 v2.3.0
