@@ -1,4 +1,4 @@
-const gitdown = require('../module');
+const gitdown = require('git-down-repo');
 
 const gitdownFunc = gitdown();
 

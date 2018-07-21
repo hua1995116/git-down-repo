@@ -143,8 +143,6 @@ function handleTree(username, repos, branch, tree, download) {
     bar = new ProgressBar(':bar :current/:total', {
         total: filterList.length
     });
-    console.log(download)
-    console.log(tree);
     filterList.map(item => {
         downloadFile(username, repos, branch, item.path)
     });

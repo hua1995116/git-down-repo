@@ -23,7 +23,27 @@ gitdown https://github.com/hua1995116/webchat/blob/master/config/dev.env.js // �
 gitdown https://github.com/hua1995116/webchat/blob/master/config/dev.env.js https://github.com/hua1995116/webpack-plugin-inner-script/blob/master/index.js // 下载多个项目（空格分隔）
 ```
 
+# node-modules
+
+```
+cnpm i git-down-repo
+```
+```
+test.js
+
+const gitdown = require('git-down-repo');
+
+const gitdownFunc = gitdown();
+
+gitdownFunc(['https://github.com/hua1995116/webchat/blob/master/.eslintrc.js']);
+
+```
+
 # 版本
+
+## 2018.7.21
+v2.4.1
+1.支持以commonJs方式引入至项目中
 
 ## 2018.7.18
 v2.3.1
