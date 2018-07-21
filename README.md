@@ -42,6 +42,9 @@ gitdownFunc(['https://github.com/hua1995116/webchat/blob/master/.eslintrc.js']);
 # 版本
 
 ## 2018.7.21
+v2.4.2
+1.修复commongJS导致的bug
+
 v2.4.1
 1.支持以commonJs方式引入至项目中
 

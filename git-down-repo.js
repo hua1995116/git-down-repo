@@ -14,7 +14,8 @@ let bar = null; // loading bar
 let protocol = null;
 let argvs = [];
 const defaultConfig = {
-    coverRepo: true // 命令行默认为true, node modules为false
+    coverRepo: true, // 命令行默认为true, node modules为false
+    branch: 'master'
 }
 /**
  * @param {String} BaseUrl
@@ -42,9 +43,9 @@ function parseUrl(BaseUrl) {
             }
         })
         if (!includeSwitch) {
-            branch = process.argv[3] || 'master';
+            branch = defaultConfig.branch;
         }
-        handleExistDir(username, repos, branch, download, BaseUrl);
+        handleExistDir(username, repos, branch, download);
     } catch (e) {
         console.log(logSymbols.error, chalk.red('url error'));
     }
@@ -57,7 +58,7 @@ function parseUrl(BaseUrl) {
  * @param {String} branch
  * @param {String} download
  */
-function handleExistDir(username, repos, branch, download, BaseUrl) {
+function handleExistDir(username, repos, branch, download) {
     const currentRepos = path.join(process.cwd(), repos);
     if(fs.existsSync(currentRepos) && defaultConfig.coverRepo) {
         inquirer
@@ -74,13 +75,13 @@ function handleExistDir(username, repos, branch, download, BaseUrl) {
             ])
             .then(answers => {
                 if(answers.type === 'continue') {
-                    requestUrl(username, repos, branch, download, BaseUrl);
+                    requestUrl(username, repos, branch, download);
                 } else {
                     return;
                 }
             });
     } else {
-        requestUrl(username, repos, branch, download, BaseUrl);
+        requestUrl(username, repos, branch, download);
     }
 }
 
@@ -91,15 +92,7 @@ function handleExistDir(username, repos, branch, download, BaseUrl) {
  * @param {String} branch
  * @param {String} download
  */
-function requestUrl(username, repos, branch, download, BaseUrl) {
-    if(BaseUrl.indexOf('/blob/') > -1) {
-        bar = new ProgressBar(':bar :current/:total', {
-            total: 1
-        });
-        const url = path.basename(BaseUrl);
-        downloadFile(username, repos, branch, url);
-        return;
-    }
+function requestUrl(username, repos, branch, download) {
     // request start 
     spinner = ora('download start!').start();
     spinner.color = 'yellow';
@@ -125,17 +118,15 @@ function requestUrl(username, repos, branch, download, BaseUrl) {
  * @param {String} download
  */
 function handleTree(username, repos, branch, tree, download) {
-    if(findDir(tree, download) === 'tree') {
-        download = download + '/';
-    } else {
-        download = '/' + download;
-    } 
     let filterList = tree.filter(item => {
         return item.type === 'blob';
     })
     if (download !== '') {
         filterList = filterList.filter(item => {
-            return item.path.indexOf(download) > -1;
+            // create reg
+            const downRepl = download.replace(/\//g, '\\\/').replace(/\./g, '\\\.');
+            const reg = new RegExp(`^${downRepl}`)
+            return reg.test(item.path);
         })
     }
     // request list is ready
@@ -217,14 +208,18 @@ function urlQueueParse(urls) {
     parseUrl(BaseUrl);
 }
 
-
 /**
  * @desc parse the way of Shell 
  */
 function nodeShell() {
     const argv = process.argv;
     argv.splice(0, 2);
-    urlQueueParse(argv);
+    let urls = argv;
+    if(argv[1] && argv[1].indexOf('http') === -1) {
+        urls = [argv[0]];
+        defaultConfig.branch = argv[1];
+    }
+    urlQueueParse(urls);
 }
 
 /**
