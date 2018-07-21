@@ -1,8 +1,8 @@
 {
   "name": "git-down-repo",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "description": "Download git-repo for any url",
-  "main": "index.js",
+  "main": "module.js",
   "bin": {
     "gitdown": "./index.js"
   },
