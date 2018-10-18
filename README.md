@@ -58,3 +58,9 @@ v2.3.1
 v2.3.0
 
 1.优化体验，当本地存在需下载目录时候，可以选择是否继续覆盖
+
+## License
+
+[MIT](http://opensource.org/licenses/MIT)
+
+Copyright (c) 2018 蓝色的秋风
