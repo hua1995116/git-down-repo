@@ -134,6 +134,7 @@ function handleTree(username, repos, branch, tree, download) {
     bar = new ProgressBar(':bar :current/:total', {
         total: filterList.length
     });
+
     filterList.map(item => {
         downloadFile(username, repos, branch, item.path)
     });
@@ -200,7 +201,7 @@ function mkdirsSync(dirname) {
 
 function urlQueueParse(urls) {
     argvs.push(...urls);
-    const BaseUrl = argvs.shift();
+    const BaseUrl = decodeURI(argvs.shift());
     if (!BaseUrl) {
         console.log(chalk.red('url is required!'));
         return;

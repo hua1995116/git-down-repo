@@ -1,13 +1,14 @@
 {
   "name": "git-down-repo",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "description": "Download git-repo for any url",
   "main": "module.js",
   "bin": {
     "gitdown": "./index.js"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "ver": "./node_modules/.bin/auto-vers -i"
   },
   "repository": {
     "type": "git",
@@ -33,5 +34,7 @@
     "progress": "^2.0.0",
     "request": "^2.87.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "auto-vers": "^0.0.4"
+  }
 }
